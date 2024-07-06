@@ -1,8 +1,9 @@
 # TechBire AI
 
+![](ss.png)
+
 [Watch the project demo on YouTube](https://www.youtube.com/watch?v=Toku4YUv2aQ)
 
-![](ss.png)
 
 Welcome to the **TechBire AI** project! This streamlit application leverages the power of Google Gemini AI to provide intelligent responses to user queries. The app is built using Streamlit for a seamless and interactive web interface.
 
