@@ -2,6 +2,10 @@ import streamlit as st
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 # Load environment variables
 load_dotenv()
@@ -24,24 +28,31 @@ if 'chat_history' not in st.session_state:
 # Function to handle input change or button press
 def handle_input():
     if st.session_state.input:
-        # Send the user's message and get the response from the AI
-        response = st.session_state['chat_context'].send_message(st.session_state.input, stream=True)
+        try:
+            # Send the user's message and get the response from the AI
+            response = st.session_state['chat_context'].send_message(st.session_state.input, stream=True)
+            
+            # Update chat history with user input
+            st.session_state['chat_history'].append(("You", st.session_state.input))
+            
+            # Safeguard for response
+            response_text = ""
+            for chunk in response:
+                if hasattr(chunk, 'text'):
+                    response_text += chunk.text
+                else:
+                    logging.error(f"Response chunk without 'text': {chunk}")
+                    st.write("Error: Response chunk does not contain 'text' attribute.")
+            
+            # Update chat history with AI response
+            st.session_state['chat_history'].append(("Bot", response_text))
         
-        # Update chat history with user input
-        st.session_state['chat_history'].append(("You", st.session_state.input))
-        
-        # Safeguard for response
-        response_text = ""
-        for chunk in response:
-            if hasattr(chunk, 'text'):
-                response_text += chunk.text
-            else:
-                # Handle cases where 'text' attribute is missing
-                st.write("Error: Response chunk does not contain 'text' attribute.")
-                st.write(chunk)
-        
-        # Update chat history with AI response
-        st.session_state['chat_history'].append(("Bot", response_text))
+        except genai.BrokenResponseError as e:
+            logging.error(f"BrokenResponseError: {e}")
+            st.write("An error occurred with the response.")
+        except Exception as e:
+            logging.error(f"Unexpected error: {e}")
+            st.write("An unexpected error occurred.")
         
         # Clear the input box
         st.session_state.input = ""
@@ -71,8 +82,10 @@ def display_formatted_response(response_text):
             st.code('\n'.join(code_lines))
 
 # Display formatted response
-if 'response_text' in st.session_state:
-    display_formatted_response(st.session_state['response_text'])
+if 'chat_history' in st.session_state and st.session_state['chat_history']:
+    last_entry = st.session_state['chat_history'][-1]
+    if last_entry[0] == "Bot":
+        display_formatted_response(last_entry[1])
 
 # Function to display chat history
 def display_chat_history(chat_history):
@@ -96,6 +109,7 @@ def display_chat_history(chat_history):
             else:
                 st.write(f"{role}: {text}")
         
+        # Add spacing after each interaction
         if role == "Bot" and i < len(chat_history) - 1:
             st.write("&nbsp;" * 3)
 
