@@ -5,6 +5,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import logging
 
+
 # Initialize Streamlit app (must be at the very beginning of the script)
 st.set_page_config(page_title="techbire-AI", page_icon="favicon.ico")
 
@@ -80,24 +81,37 @@ def display_formatted_response(response_text):
                     code_lines[0] = f"/* {code_lines[0]} */"
             st.code('\n'.join(code_lines))
 
-# Display formatted response
-if 'chat_history' in st.session_state:
-    for role, text in st.session_state['chat_history']:
-        if "```" in text:
-            code_blocks = text.split("```")
-            for j in range(len(code_blocks)):
-                if j % 2 == 0:  # Text parts
-                    st.write(f"{role}: {code_blocks[j]}")
-                else:  # Code parts
-                    code_lines = code_blocks[j].strip().split('\n')
-                    st.code('\n'.join(code_lines), language='')
+# Function to display chat history
+def display_chat_history(chat_history):
+    for i, (role, text) in enumerate(chat_history):
+        lines = text.split('\n')
+        if len(lines) > 3:  # More than 3 lines
+            short_text = '\n'.join(lines[:3])
+            remaining_text = '\n'.join(lines[3:])
+            st.write(f"{role}: {short_text}")
+            with st.expander("READ MORE"):
+                st.write(remaining_text)
         else:
-            st.write(f"{role}: {text}")
+            if "```" in text:  # Check if text contains code snippet
+                code_blocks = text.split("```")
+                for j in range(len(code_blocks)):
+                    if j % 2 == 0:  # Text parts
+                        st.write(f"{role}: {code_blocks[j]}")
+                    else:  # Code parts
+                        code_lines = code_blocks[j].strip().split('\n')
+                        st.code('\n'.join(code_lines), language='')
+            else:
+                st.write(f"{role}: {text}")
 
         # Add three spaces after each complete interaction (You + Bot)
-        if role == "Bot":
+        if role == "Bot" and i < len(chat_history) - 1:
             st.write("&nbsp;" * 3)
+
 # Display chat history
-st.subheader("\n\n\n")
-st.subheader("Chat History:")
-display_chat_history(st.session_state['chat_history'])
+if 'chat_history' in st.session_state:
+    display_chat_history(st.session_state['chat_history'])
+
+# # Display chat history
+# st.subheader("\n\n\n")
+# st.subheader("Chat History:")
+# display_chat_history(st.session_state['chat_history'])
