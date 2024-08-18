@@ -111,7 +111,7 @@ def display_chat_history(chat_history):
 if 'chat_history' in st.session_state:
     display_chat_history(st.session_state['chat_history'])
 
-# # Display chat history
-# st.subheader("\n\n\n")
-# st.subheader("Chat History:")
-# display_chat_history(st.session_state['chat_history'])
+# Display chat history
+st.subheader("\n\n\n")
+st.subheader("Chat History:")
+display_chat_history(st.session_state['chat_history'])
