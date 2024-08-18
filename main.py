@@ -16,7 +16,7 @@ model = genai.GenerativeModel("gemini-pro")
 st.set_page_config(page_title="techbire-AI")
 st.header("TechBire AI")
 
-# Initialize session state for chat history if it doesn't exist
+# Initialize session state for chat history and context if it doesn't exist
 if 'chat_history' not in st.session_state:
     st.session_state['chat_history'] = []
     st.session_state['chat_context'] = model.start_chat(history=[])
@@ -27,11 +27,20 @@ def handle_input():
         # Send the user's message and get the response from the AI
         response = st.session_state['chat_context'].send_message(st.session_state.input, stream=True)
         
-        # Update chat history with user input and AI response
+        # Update chat history with user input
         st.session_state['chat_history'].append(("You", st.session_state.input))
+        
+        # Safeguard for response
         response_text = ""
         for chunk in response:
-            response_text += chunk.text
+            if hasattr(chunk, 'text'):
+                response_text += chunk.text
+            else:
+                # Handle cases where 'text' attribute is missing
+                st.write("Error: Response chunk does not contain 'text' attribute.")
+                st.write(chunk)
+        
+        # Update chat history with AI response
         st.session_state['chat_history'].append(("Bot", response_text))
         
         # Clear the input box
