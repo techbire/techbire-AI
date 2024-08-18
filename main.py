@@ -1,6 +1,8 @@
+
 import streamlit as st
 import os
 import base64  # Import base64 for encoding favicon
+import google.generativeai as genai
 from dotenv import load_dotenv
 import logging
 
