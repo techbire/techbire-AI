@@ -4,6 +4,21 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import logging
 
+# Function to inject HTML for favicon
+def inject_favicon():
+    favicon_path = "favicon.ico"  # Adjust path if necessary
+    favicon_html = f"""
+    <link rel="icon" href="data:image/x-icon;base64,{base64.b64encode(open(favicon_path, 'rb').read()).decode()}">
+    """
+    st.markdown(favicon_html, unsafe_allow_html=True)
+
+# Call the function to inject the favicon
+inject_favicon()
+
+# Your existing Streamlit code
+st.set_page_config(page_title="techbire-AI")
+st.header("TechBire AI")
+
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -16,9 +31,6 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 # Initialize the generative model
 model = genai.GenerativeModel("gemini-pro")
 
-# Initialize Streamlit app
-st.set_page_config(page_title="techbire-AI")
-st.header("TechBire AI")
 
 # Initialize session state for chat history and context if it doesn't exist
 if 'chat_history' not in st.session_state:
