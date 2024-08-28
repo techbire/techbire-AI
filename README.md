@@ -9,7 +9,7 @@ Welcome to the **TechBire AI** project! This streamlit application leverages the
 
 ## Features
 
-- **Interactive Chat Interface**: Interactive Chat Interface: Engage in a conversation with the AI by inputting your questions and receiving detailed responses. The AI retains context throughout the conversation to provide relevant and coherent answers based on previous interactions.
+- **Interactive Chat Interface**: Engage in a conversation with the AI by inputting your questions and receiving detailed responses. The AI retains context throughout the conversation to provide relevant and coherent answers based on previous interactions.
 - **Code Snippet Formatting**: The AI can provide code snippets in various programming languages, which are displayed with proper formatting.
 - **Chat History**: View the complete history of your interactions with the AI.
 
